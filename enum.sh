@@ -37,3 +37,24 @@ echo "Installed Packages: $PACKAGES"
 # Get the list of mounted filesystems
 FILESYSTEMS=$(df -h | grep -v "Filesystem" | awk '{print $1}')
 echo "Mounted Filesystems: $FILESYSTEMS"
+
+# Get the kernel version
+kernel=$(uname -r)
+echo "Kernel: $kernel"
+
+# Get a list of installed packages
+echo "Installed packages:"
+dpkg-query -l
+
+# Get a list of users on the machine
+echo "Users:"
+cat /etc/passwd | cut -d: -f1
+
+# Get a list of open ports
+echo "Open ports:"
+netstat -tulpn
+
+# Get the Linux distribution and version
+distro=$(lsb_release -d | cut -d: -f2 | awk '{print $1}')
+version=$(lsb_release -d | cut -d: -f2 | awk '{print $2}')
+echo "Distribution: $distro $version"
