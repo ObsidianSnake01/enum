@@ -58,3 +58,23 @@ netstat -tulpn
 distro=$(lsb_release -d | cut -d: -f2 | awk '{print $1}')
 version=$(lsb_release -d | cut -d: -f2 | awk '{print $2}')
 echo "Distribution: $distro $version"
+
+# Get IP routing tables
+ip route
+
+# Get hostname
+hostname
+
+# Get DNS details
+cat /etc/resolv.conf
+
+# Get SNMP information
+snmpget -v 2c -c public localhost .1.3.6.1.2.1.1.5.0
+
+# Get users on database records
+mysql -u username -p password -e "SELECT User FROM mysql.user"
+
+# Get network services and shares
+smbclient -L localhost
+
+echo "Done!"
