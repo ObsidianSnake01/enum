@@ -1,20 +1,30 @@
 #!/bin/bash
 
+# Function to prompt user for input
+prompt_input() {
+    read -p "$1" input
+    echo "$input"
+}
+
+# Function to enumerate SNMP data
+enumerate_snmp() {
+    snmpwalk -v 2c -c public "$1" "$2"
+}
+
 # Prompt the user for the target IP address or hostname
-echo -n "Enter the target IP or hostname: "
-read target
+target=$(prompt_input "Enter the target IP or hostname: ")
 
 # Enumerate usernames
-snmpwalk -v 2c -c public $target 1.3.6.1.4.1.77.1.2.25
+enumerate_snmp "$target" 1.3.6.1.4.1.77.1.2.25
 
 # Enumerate group names
-snmpwalk -v 2c -c public $target 1.3.6.1.4.1.77.1.2.3
+enumerate_snmp "$target" 1.3.6.1.4.1.77.1.2.3
 
 # Enumerate passwords
-snmpwalk -v 2c -c public $target 1.3.6.1.4.1.77.1.2.22
+enumerate_snmp "$target" 1.3.6.1.4.1.77.1.2.22
 
 # Enumerate system names
-snmpwalk -v 2c -c public $target 1.3.6.1.2.1.1.5.0
+enumerate_snmp "$target" 1.3.6.1.2.1.1.5.0
 
 # Enumerate devices in the network
-snmpwalk -v 2c -c public $target 1.3.6.1.2.1.4.22.1.2
+enumerate_snmp "$target" 1.3.6.1.2.1.4.22.1.2
