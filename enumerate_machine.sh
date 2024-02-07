@@ -1,80 +1,83 @@
 #!/bin/bash
 
-# This script enumerates a Linux machine
+# This script provides system information for a Linux machine
+
+# Function to display section headers
+print_header() {
+    echo "----------------------------------------------"
+    echo "$1"
+    echo "----------------------------------------------"
+}
 
 # Get the hostname
 HOSTNAME=$(hostname)
-echo "Hostname: $HOSTNAME"
+print_header "Hostname"
+echo "$HOSTNAME"
 
 # Get the OS version
-OS=$(lsb_release -d | cut -f2)
-echo "Operating System: $OS"
+OS=$(lsb_release -ds)
+print_header "Operating System"
+echo "$OS"
 
 # Get the kernel version
 KERNEL=$(uname -r)
-echo "Kernel Version: $KERNEL"
+print_header "Kernel Version"
+echo "$KERNEL"
 
 # Get the uptime
 UPTIME=$(uptime -p)
-echo "Uptime: $UPTIME"
+print_header "Uptime"
+echo "$UPTIME"
 
 # Get the list of users
-USERS=$(cut -d: -f1 /etc/passwd)
-echo "Users: $USERS"
+print_header "Users"
+cut -d: -f1 /etc/passwd
 
 # Get the CPU information
-CPU=$(lscpu | grep "Model name" | cut -f2 -d:)
-echo "CPU: $CPU"
+CPU=$(lscpu | awk '/Model name/ {print $3 " " $4 " " $5}')
+print_header "CPU"
+echo "$CPU"
 
 # Get the memory information
-MEMORY=$(free -m | grep "Mem" | awk '{print $2}')
-echo "Memory: $MEMORY MB"
+MEMORY=$(free -m | awk '/Mem:/ {print $2}')
+print_header "Memory"
+echo "$MEMORY MB"
 
 # Get the list of installed packages
-PACKAGES=$(dpkg --list | grep -v "ii  " | wc -l)
-echo "Installed Packages: $PACKAGES"
+PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W | wc -l)
+print_header "Installed Packages"
+echo "$PACKAGES"
 
 # Get the list of mounted filesystems
-FILESYSTEMS=$(df -h | grep -v "Filesystem" | awk '{print $1}')
-echo "Mounted Filesystems: $FILESYSTEMS"
-
-# Get the kernel version
-kernel=$(uname -r)
-echo "Kernel: $kernel"
-
-# Get a list of installed packages
-echo "Installed packages:"
-dpkg-query -l
-
-# Get a list of users on the machine
-echo "Users:"
-cat /etc/passwd | cut -d: -f1
+print_header "Mounted Filesystems"
+df -h | awk 'NR>1 {print $1}'
 
 # Get a list of open ports
-echo "Open ports:"
-netstat -tulpn
+print_header "Open Ports"
+netstat -tuln
 
 # Get the Linux distribution and version
-distro=$(lsb_release -d | cut -d: -f2 | awk '{print $1}')
-version=$(lsb_release -d | cut -d: -f2 | awk '{print $2}')
-echo "Distribution: $distro $version"
+print_header "Distribution and Version"
+lsb_release -a
 
 # Get IP routing tables
+print_header "IP Routing Tables"
 ip route
 
-# Get hostname
-hostname
-
 # Get DNS details
+print_header "DNS Details"
 cat /etc/resolv.conf
 
 # Get SNMP information
+print_header "SNMP Information"
 snmpget -v 2c -c public localhost .1.3.6.1.2.1.1.5.0
 
-# Get users on database records
+# Get users on database records (assuming MySQL)
+print_header "MySQL Users"
 mysql -u username -p password -e "SELECT User FROM mysql.user"
 
-# Get network services and shares
+# Get network services and shares (assuming Samba)
+print_header "Samba Services and Shares"
 smbclient -L localhost
 
 echo "Done!"
